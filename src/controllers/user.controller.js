@@ -262,9 +262,9 @@ const updateAccountDetails = asyncHandler(async (req, res, next) => {
     const { email } = req.body;
     // const user = await User.findById(req.user?.id);
 
-    if (!user) {
-        throw new ApiError(404, "User not found!");
-    }
+    // if (!user) {
+    //     throw new ApiError(404, "User not found!");
+    // }
 
     if (!email) {  
         throw new ApiError(409, "Email is required!");
@@ -390,6 +390,7 @@ const getUserChannelProfile = asyncHandler(async(req,res,next)=>{
         
     ]);
     //TODO:console.log(channel)
+    console.log(channel)
 
     if(!channel?.length){
         throw new ApiError(400,"Channel does not exists!");
