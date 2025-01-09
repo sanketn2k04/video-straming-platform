@@ -1,5 +1,7 @@
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { asyncHandler } from './asyncHandler.js';
+import fs from "fs"
+import path from 'path';
 
 const s3Client = new S3Client({
     region: 'us-east-1',
@@ -15,22 +17,46 @@ const s3Client = new S3Client({
     }
 });
 
-export const uploadMp4ToS3 = asyncHandler(
-    async (file) => {
-        try {
-            const uploadParams = {
-                Bucket: 'sanket.dev',
-                Key: `tempVideos`,
-                Body: file,
-                ContentType: 'video/mp4'
-            };
-    
-            const command = new PutObjectCommand(uploadParams);
-            const response = await s3Client.send(command);
-            return response;
-        } catch (error) {
-            console.error("Error uploading file:", error);
-            throw error;
+export const uploadMp4ToS3 = asyncHandler(async (file) => {
+    try {
+        if (!file) throw new Error("File parameter is missing!");
+
+        // Assuming 'file' is the path to the file to upload
+        const filePath = path.resolve(file); // Resolve the absolute path of the file
+
+        // Check if the file exists
+        if (!fs.existsSync(filePath)) {
+            throw new Error(`File not found at path: ${filePath}`);
         }
+
+        // Create a readable stream for the file
+        const fileStream = fs.createReadStream(filePath);
+
+        const uploadParams = {
+            Bucket: 'sanket.dev',
+            Key: `tempVideos/${path.basename(filePath)}`,
+            Body: fileStream,
+            ContentType: 'video/mp4',
+        };
+
+        // console.log("Upload parameters:", uploadParams);
+
+        const command = new PutObjectCommand(uploadParams);
+        const response = await s3Client.send(command);
+
+
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                console.error(`Error deleting file: ${filePath}`, err.message);
+            } else {
+                console.log(`File deleted successfully: ${filePath}`);
+            }
+        });
+
+        return response;
+
+    } catch (error) {
+        console.error("Error uploading file:", error.message);
+        throw error;
     }
-)
+});
