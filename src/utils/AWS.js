@@ -33,7 +33,7 @@ export const uploadMp4ToS3 = asyncHandler(async (file) => {
         const fileStream = fs.createReadStream(filePath);
 
         const uploadParams = {
-            Bucket: 'sanket.dev',
+            Bucket: 'temp-raw-videos.sanketnabde.com',
             Key: `tempVideos/${path.basename(filePath)}`,
             Body: fileStream,
             ContentType: 'video/mp4',
@@ -48,8 +48,6 @@ export const uploadMp4ToS3 = asyncHandler(async (file) => {
         fs.unlink(filePath, (err) => {
             if (err) {
                 console.error(`Error deleting file: ${filePath}`, err.message);
-            } else {
-                console.log(`File deleted successfully: ${filePath}`);
             }
         });
 
@@ -60,3 +58,4 @@ export const uploadMp4ToS3 = asyncHandler(async (file) => {
         throw error;
     }
 });
+
