@@ -6,8 +6,8 @@ import path from 'path';
 const s3Client = new S3Client({
     region: 'us-east-1',
     credentials: {
-        accessKeyId: process.env.ACCESS_KEY_ID,
-        secretAccessKey: process.env.SECRET_ACCESS_KEY
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
     },
     requestHandler: {
         // Set the connection timeout to 5 minutes (300000 milliseconds)
@@ -33,8 +33,8 @@ export const uploadMp4ToS3 = asyncHandler(async (file) => {
         const fileStream = fs.createReadStream(filePath);
 
         const uploadParams = {
-            Bucket: 'temp-raw-videos.sanketnabde.com',
-            Key: `tempVideos/${path.basename(filePath)}`,
+            Bucket: process.env.RAW_VIDEO_BUCKET_NAME,
+            Key: `videoFile/${path.basename(filePath)}`,
             Body: fileStream,
             ContentType: 'video/mp4',
         };
@@ -44,7 +44,7 @@ export const uploadMp4ToS3 = asyncHandler(async (file) => {
         const command = new PutObjectCommand(uploadParams);
         const response = await s3Client.send(command);
 
-
+        console.log(`Video uploded successfully on ${process.env.RAW_VIDEO_BUCKET_NAME}`);
         fs.unlink(filePath, (err) => {
             if (err) {
                 console.error(`Error deleting file: ${filePath}`, err.message);
