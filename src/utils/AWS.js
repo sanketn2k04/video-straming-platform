@@ -44,7 +44,7 @@ export const uploadMp4ToS3 = asyncHandler(async (file) => {
         const command = new PutObjectCommand(uploadParams);
         const response = await s3Client.send(command);
 
-        console.log(`Video uploded successfully on ${process.env.RAW_VIDEO_BUCKET_NAME}`);
+        // console.log(`Video uploded successfully on ${process.env.RAW_VIDEO_BUCKET_NAME}`);
         fs.unlink(filePath, (err) => {
             if (err) {
                 console.error(`Error deleting file: ${filePath}`, err.message);
