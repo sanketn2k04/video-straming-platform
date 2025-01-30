@@ -17,7 +17,7 @@ const s3Client = new S3Client({
     }
 });
 
-export const uploadMp4ToS3 = asyncHandler(async (file) => {
+export const uploadMp4ToS3 =async (file) => {
     try {
         if (!file) throw new Error("File parameter is missing!");
 
@@ -57,5 +57,5 @@ export const uploadMp4ToS3 = asyncHandler(async (file) => {
         console.error("Error uploading file:", error.message);
         throw error;
     }
-});
+};
 

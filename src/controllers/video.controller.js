@@ -5,10 +5,24 @@ import mongoose from "mongoose";
 import {uploadMp4ToS3} from "../utils/AWS.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Video } from "../models/video.model.js"
+import { exec } from "child_process";
 
 
-const uploadVideo = asyncHandler(async(req,res,next)=>{
-    const {title,description,duration}=req.body;
+const getVideoDuration = async (filePath) => {
+    return new Promise((resolve, reject) => {
+        const command = `ffprobe -i "${filePath}" -show_entries format=duration -v quiet -of csv="p=0"`;
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                reject(`Error getting duration: ${error.message}`);
+            } else {
+                resolve(parseFloat(stdout.trim())); // Duration in seconds
+            }
+        });
+    });
+};
+
+const uploadVideo = asyncHandler(async(req,res)=>{
+    const {title,description}=req.body;
 
     const owner = req.user;
 
@@ -25,6 +39,9 @@ const uploadVideo = asyncHandler(async(req,res,next)=>{
     if(req.files && Array.isArray(req.files.videoFile) && req.files.videoFile.length>0){
         videoFileLocalPath=req.files.videoFile[0].path;
     }
+    let duration = await getVideoDuration(videoFileLocalPath);
+    duration = Math.round(duration); // Round off the duration to the nearest whole number
+    console.log(duration);
 
     let thumbnailLocalPath=null;
     if(req.files && Array.isArray(req.files.thumbnail) && req.files.thumbnail.length>0){
@@ -35,10 +52,10 @@ const uploadVideo = asyncHandler(async(req,res,next)=>{
         throw new ApiError(400, "Missing required fields!");
     }
 
-    uploadMp4ToS3(videoFileLocalPath);
+    await uploadMp4ToS3(videoFileLocalPath);
     const thumbnail=await uploadOnCloudinary(thumbnailLocalPath);
 
-    console.log(thumbnail);
+    
 
     const userId=owner._id.toString();
     const fileNameOnS3 = videoFileLocalPath.split("\\").pop().split(".")[0];
@@ -62,6 +79,7 @@ const uploadVideo = asyncHandler(async(req,res,next)=>{
         new ApiResponse(200, video, "Video uploded Successfully!")
     );
 });
+
 
 export {
     uploadVideo
