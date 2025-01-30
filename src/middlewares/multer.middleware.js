@@ -5,7 +5,8 @@ const storage = multer.diskStorage({
       callBack(null, './public/temp')
     },
     filename: function (req, file, callBack) {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+
+      const uniqueSuffix = req.user._id + '-' + Date.now() + '-' + Math.round(Math.random() * 1E9)
       const fileExtension = file.originalname.split('.').pop();
       callBack(null, file.fieldname + '-' + uniqueSuffix+'.'+fileExtension)
     }
