@@ -25,6 +25,10 @@ router.route("/v/:videoId").post(
     deleteVideo
 )
 
+router.route("/v/list").get(
+    listVideos
+)
+
 router.route("/v/:videoId").get(
     getVideo
 )
@@ -34,9 +38,7 @@ router.route("/v/:videoId").patch(
     updateVideo
 )
 
-router.route("/v/list").get(
-    listVideos
-)
+
 
 
 export default router;

@@ -49,7 +49,7 @@ const uploadVideo = asyncHandler(async(req,res)=>{
         thumbnailLocalPath=req.files.thumbnail[0].path;
     }
 
-    if(!videoFileLocalPath || !thumbnailLocalPath || !duration){
+    if(!videoFileLocalPath || !thumbnailLocalPath){
         throw new ApiError(400, "Missing required fields!");
     }
 
