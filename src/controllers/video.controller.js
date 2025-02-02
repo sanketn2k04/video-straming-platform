@@ -40,6 +40,7 @@ const uploadVideo = asyncHandler(async(req,res)=>{
         videoFileLocalPath=req.files.videoFile[0].path;
     }
     let duration = await getVideoDuration(videoFileLocalPath);
+
     duration = Math.round(duration); // Round off the duration to the nearest whole number
     console.log(duration);
 
@@ -80,7 +81,99 @@ const uploadVideo = asyncHandler(async(req,res)=>{
     );
 });
 
+const deleteVideo = asyncHandler(async (req, res) => {
+    const { videoId } = req.params;
+    const owner = req.user;
+
+    if (!owner) {
+        throw new ApiError(404, "Sign in or register to delete video!");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(videoId)) {
+        throw new ApiError(400, "Invalid video ID!");
+    }
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+        throw new ApiError(404, "Video not found!");
+    }
+
+    if (video.owner.toString() !== owner._id.toString()) {
+        throw new ApiError(403, "You are not authorized to delete this video!");
+    }
+
+    await Video.findByIdAndDelete(videoId);
+
+    return res.status(200).json(
+        new ApiResponse(200, null, "Video deleted successfully!")
+    );
+});
+
+
+const getVideo = asyncHandler(async (req, res) => {
+    const { videoId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(videoId)) {
+        throw new ApiError(400, "Invalid video ID!");
+    }
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+        throw new ApiError(404, "Video not found!");
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, video, "Video retrieved successfully!")
+    );
+});
+
+const updateVideo = asyncHandler(async (req, res) => {
+    const { videoId } = req.params;
+    const { title, description } = req.body;
+    const owner = req.user;
+
+    if (!owner) {
+        throw new ApiError(404, "Sign in or register to update video!");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(videoId)) {
+        throw new ApiError(400, "Invalid video ID!");
+    }
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+        throw new ApiError(404, "Video not found!");
+    }
+
+    if (video.owner.toString() !== owner._id.toString()) {
+        throw new ApiError(403, "You are not authorized to update this video!");
+    }
+
+    video.title = title || video.title;
+    video.description = description || video.description;
+
+    await video.save();
+
+    return res.status(200).json(
+        new ApiResponse(200, video, "Video updated successfully!")
+    );
+});
+
+const listVideos = asyncHandler(async (req, res) => {
+    const videos = await Video.find();
+
+    return res.status(200).json(
+        new ApiResponse(200, videos, "Videos retrieved successfully!")
+    );
+});
 
 export {
-    uploadVideo
+    uploadVideo,
+    deleteVideo,
+    getVideo,
+    updateVideo,
+    listVideos
 }
