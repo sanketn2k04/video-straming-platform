@@ -452,7 +452,7 @@ const getWatchHistory = asyncHandler(async(req,res,next)=>{
 
 
 
-})
+});
 
 export { 
     registerUser,

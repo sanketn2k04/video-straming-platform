@@ -1,6 +1,6 @@
 import {Router} from "express";
 import {upload} from "../middlewares/multer.middleware.js"
-import {deleteVideo, getVideo, listVideos, updateVideo, uploadVideo} from "../controllers/video.controller.js"
+import {deleteVideo, getVideo, getVideoProfile, listVideos, updateVideo, uploadVideo} from "../controllers/video.controller.js"
 import {verifyJWT} from "../middlewares/auth.middleware.js"
 
 const router=Router()
@@ -36,6 +36,10 @@ router.route("/v/:videoId").get(
 router.route("/v/:videoId").patch(
     verifyJWT,
     updateVideo
+)
+
+router.route("/vp/:videoId").get(
+    getVideoProfile
 )
 
 

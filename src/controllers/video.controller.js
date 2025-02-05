@@ -170,10 +170,33 @@ const listVideos = asyncHandler(async (req, res) => {
     );
 });
 
+// TODO:move it to common controller
+const getVideoProfile = asyncHandler(async (req, res) => {
+    const { videoId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(videoId)) {
+        throw new ApiError(400, "Invalid video ID!");
+    }
+
+    const video = await Video.findById(videoId).populate('owner', 'name channel');
+
+    if (!video) {
+        throw new ApiError(404, "Video not found!");
+    }
+
+    const recommendedVideos = await Video.find({ _id: { $ne: videoId } }).limit(5);
+
+    return res.status(200).json(
+        new ApiResponse(200, { video, recommendedVideos }, "Video profile retrieved successfully!")
+    );
+});
+
+
 export {
     uploadVideo,
     deleteVideo,
     getVideo,
     updateVideo,
-    listVideos
+    listVideos,
+    getVideoProfile,
 }
