@@ -64,7 +64,7 @@ const uploadVideo = asyncHandler(async(req,res)=>{
         urlTo144p: `https://s3.us-east-1.amazonaws.com/${process.env.UPLOAD_VIDEO_BUCKET_NAME}/transcoded/${userId}/${fileNameOnS3}/${fileNameOnS3}-144p/index.m3u8`,
         urlTo480p: `https://s3.us-east-1.amazonaws.com/${process.env.UPLOAD_VIDEO_BUCKET_NAME}/transcoded/${userId}/${fileNameOnS3}/${fileNameOnS3}-480p/index.m3u8`,
         urlTo720p: `https://s3.us-east-1.amazonaws.com/${process.env.UPLOAD_VIDEO_BUCKET_NAME}/transcoded/${userId}/${fileNameOnS3}/${fileNameOnS3}-720p/index.m3u8`,
-        urlTo1080p: `https://s3.us-east-1.amazonaws.com/${process.env.UPLOAD_VIDEO_BUCKET_NAME}transcoded//${userId}/${fileNameOnS3}/${fileNameOnS3}-1080p/index.m3u8`,
+        urlTo1080p: `https://s3.us-east-1.amazonaws.com/${process.env.UPLOAD_VIDEO_BUCKET_NAME}/transcoded/${userId}/${fileNameOnS3}/${fileNameOnS3}-1080p/index.m3u8`,
     }
 
     const video=await Video.create({
