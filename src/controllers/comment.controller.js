@@ -6,8 +6,16 @@ import {ApiResponse} from "../utils/ApiResponse.js"
 const createComment = asyncHandler(async (req, res, next) => {
     const { videoId, text } = req.body;
 
+    console.log("Headers:", req.headers);
+    console.log("Body:", req.body);
+    console.log("Method:", req.method);
+    console.log("Query Params:", req.query);
+    console.log("Cookies:", req.cookies);
+
+
+
     if (!videoId || !text) {
-        return next(new ApiError(400, "Video ID and text are required"));
+        return next(new ApiError(400, "Video ID or text are required"));
     }
 
     const comment = new Comment({
@@ -25,7 +33,7 @@ const updateComment = asyncHandler(async (req, res, next) => {
     const { commentId, text } = req.body;
 
     if (!commentId || !text) {
-        return next(new ApiError(400, "Comment ID and text are required"));
+        return next(new ApiError(400, "Comment ID or text are required"));
     }
 
     const comment = await Comment.findById(commentId);

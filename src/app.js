@@ -30,8 +30,7 @@ app.use("/api/v1/comments",commentRouter);
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: err.stack.split("\n")[0].replace("Error: ", "") });
 });
-
 
 export {app};
