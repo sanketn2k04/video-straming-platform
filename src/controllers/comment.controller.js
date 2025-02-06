@@ -6,12 +6,6 @@ import {ApiResponse} from "../utils/ApiResponse.js"
 const createComment = asyncHandler(async (req, res, next) => {
     const { videoId, text } = req.body;
 
-    console.log("Headers:", req.headers);
-    console.log("Body:", req.body);
-    console.log("Method:", req.method);
-    console.log("Query Params:", req.query);
-    console.log("Cookies:", req.cookies);
-
 
 
     if (!videoId || !text) {
