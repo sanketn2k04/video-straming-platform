@@ -3,7 +3,7 @@ import {ApiError} from "../utils/ApiError.js"
 import { Comment } from "../models/comment.model.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 
-export const createComment = asyncHandler(async (req, res, next) => {
+const createComment = asyncHandler(async (req, res, next) => {
     const { videoId, text } = req.body;
 
     if (!videoId || !text) {
@@ -21,7 +21,7 @@ export const createComment = asyncHandler(async (req, res, next) => {
     res.status(201).json(new ApiResponse(201, "Comment created successfully", comment));
 });
 
-export const updateComment = asyncHandler(async (req, res, next) => {
+const updateComment = asyncHandler(async (req, res, next) => {
     const { commentId, text } = req.body;
 
     if (!commentId || !text) {
@@ -44,7 +44,7 @@ export const updateComment = asyncHandler(async (req, res, next) => {
     res.status(200).json(new ApiResponse(200, "Comment updated successfully", comment));
 });
 
-export const deleteComment = asyncHandler(async (req, res, next) => {
+const deleteComment = asyncHandler(async (req, res, next) => {
     const { commentId } = req.body;
 
     if (!commentId) {
@@ -66,7 +66,7 @@ export const deleteComment = asyncHandler(async (req, res, next) => {
     res.status(200).json(new ApiResponse(200, "Comment deleted successfully"));
 });
 
-export const getCommentsByVideoId = asyncHandler(async (req, res, next) => {
+const getCommentsByVideoId = asyncHandler(async (req, res, next) => {
     const { videoId } = req.params;
 
     if (!videoId) {
@@ -81,3 +81,10 @@ export const getCommentsByVideoId = asyncHandler(async (req, res, next) => {
 
     res.status(200).json(new ApiResponse(200, "Comments retrieved successfully", comments));
 });
+
+export {
+    createComment,
+    updateComment,
+    deleteComment,
+    getCommentsByVideoId
+}
