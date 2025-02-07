@@ -191,6 +191,40 @@ const getVideoProfile = asyncHandler(async (req, res) => {
     );
 });
 
+const likeVideo = asyncHandler(async (videoId, userId) => {
+    const video = await Video.findById(videoId);
+
+    if (video.likes.includes(userId)) {
+        // Remove Like (Unlike)
+        await Video.findByIdAndUpdate(videoId, { $pull: { likes: userId } });
+    } else {
+        // Add Like and Remove Unlike if Exists
+        await Video.findByIdAndUpdate(videoId, {
+            $addToSet: { likes: userId },
+            $pull: { unlikes: userId }
+        });
+    }
+});
+
+const dislikeVideo = asyncHandler(async (videoId, userId) => {
+    const video = await Video.findById(videoId);
+
+    if (video.unlikes.includes(userId)) {
+        // Remove Unlike
+        await Video.findByIdAndUpdate(videoId, { $pull: { unlikes: userId } });
+    } else {
+        // Add Unlike and Remove Like if Exists
+        await Video.findByIdAndUpdate(videoId, {
+            $addToSet: { unlikes: userId },
+            $pull: { likes: userId }
+        });
+    }
+});
+
+const incrementShares = asyncHandler(async (videoId) => {
+    await Video.findByIdAndUpdate(videoId, { $inc: { shares: 1 } });
+});
+
 
 export {
     uploadVideo,
@@ -199,4 +233,7 @@ export {
     updateVideo,
     listVideos,
     getVideoProfile,
+    likeVideo,
+    dislikeVideo,
+    incrementShares
 }
