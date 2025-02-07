@@ -192,6 +192,7 @@ const getVideoProfile = asyncHandler(async (req, res) => {
 });
 
 const likeVideo = asyncHandler(async (videoId, userId) => {
+    
     const video = await Video.findById(videoId);
 
     if (video.likes.includes(userId)) {

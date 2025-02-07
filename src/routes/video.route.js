@@ -1,6 +1,15 @@
 import {Router} from "express";
 import {upload} from "../middlewares/multer.middleware.js"
-import {deleteVideo, getVideo, getVideoProfile, listVideos, updateVideo, uploadVideo} from "../controllers/video.controller.js"
+import {deleteVideo, 
+    getVideo, 
+    getVideoProfile, 
+    listVideos, 
+    updateVideo, 
+    uploadVideo,
+    likeVideo,
+    dislikeVideo,
+    incrementShares
+} from "../controllers/video.controller.js"
 import {verifyJWT} from "../middlewares/auth.middleware.js"
 import {increaseViewsCount} from "../middlewares/views.middleware.js"
 
@@ -40,10 +49,12 @@ router.route("/v/:videoId").patch(
     updateVideo
 )
 
-router.route("/vp/:videoId").get(
+router.route("/v/video-profile/:videoId").get(
     increaseViewsCount,
     getVideoProfile
 )
+
+// router.route("/v/likes/:")
 
 
 
