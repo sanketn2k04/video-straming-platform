@@ -155,7 +155,7 @@ const updateVideo = asyncHandler(async (req, res) => {
     video.title = title || video.title;
     video.description = description || video.description;
 
-    await video.save();
+    await video.save({new:true});
 
     return res.status(200).json(
         new ApiResponse(200, video, "Video updated successfully!")

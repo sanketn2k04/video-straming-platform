@@ -20,12 +20,12 @@ router.route("/c/updateComment").patch(
     updateComment
 );
 
-router.route("/c/deleteComment").post(
+router.route("/c/deleteComment").delete(
     verifyJWT,
     deleteComment
 )
 
-router.route("/c/allComments").get(
+router.route("/c/:videoId").get(
     verifyJWT,
     getCommentsByVideoId
 )
