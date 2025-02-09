@@ -1,8 +1,8 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
-import {ApiError} from "../utils/ApiError.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
+import {ApiError} from "../utils/ApiError.js";
+import {ApiResponse} from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
-import {uploadMp4ToS3} from "../utils/AWS.js"
+import {uploadMp4ToS3} from "../utils/AWS.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Video } from "../models/video.model.js"
 import { exec } from "child_process";
@@ -191,39 +191,82 @@ const getVideoProfile = asyncHandler(async (req, res) => {
     );
 });
 
-const likeVideo = asyncHandler(async (videoId, userId) => {
-    
+const likeVideo = asyncHandler(async (req,res) => {
+
+    const {videoId,userId} = req.body;
+    if (!mongoose.Types.ObjectId.isValid(videoId)) {
+        throw new ApiError(400, "Invalid video ID!");
+    }
+
     const video = await Video.findById(videoId);
 
-    if (video.likes.includes(userId)) {
+    if (!video) {
+        throw new ApiError(404, "Video not found!");
+    }
+
+    let videoLiked=video.likes.includes(userId);
+    if (videoLiked) {
         // Remove Like (Unlike)
         await Video.findByIdAndUpdate(videoId, { $pull: { likes: userId } });
     } else {
         // Add Like and Remove Unlike if Exists
         await Video.findByIdAndUpdate(videoId, {
             $addToSet: { likes: userId },
-            $pull: { unlikes: userId }
+            $pull: { dislikes: userId }
         });
     }
+    const responseMessage=(videoLiked==true)?"like removed successfully!":"liked successfully!";
+    return res.status(200).json(
+        new ApiResponse(200,{}, `Video ${responseMessage}`)
+    );
 });
 
-const dislikeVideo = asyncHandler(async (videoId, userId) => {
+
+const dislikeVideo = asyncHandler(async (req,res) => {
+
+    const {videoId,userId} = req.body;
+    if (!mongoose.Types.ObjectId.isValid(videoId)) {
+        throw new ApiError(400, "Invalid video ID!");
+    }
+
     const video = await Video.findById(videoId);
 
-    if (video.unlikes.includes(userId)) {
+    if (!video) {
+        throw new ApiError(404, "Video not found!");
+    }
+
+    let videodisLiked=video.dislikes.includes(userId);
+
+    if (videodisLiked) {
         // Remove Unlike
-        await Video.findByIdAndUpdate(videoId, { $pull: { unlikes: userId } });
+        await Video.findByIdAndUpdate(videoId, { $pull: { dislikes: userId } });
     } else {
         // Add Unlike and Remove Like if Exists
         await Video.findByIdAndUpdate(videoId, {
-            $addToSet: { unlikes: userId },
+            $addToSet: { dislikes: userId },
             $pull: { likes: userId }
         });
     }
+
+    const responseMessage=(videodisLiked==true)?"dislike removed successfully!":"disliked successfully!";
+    return res.status(200).json(
+        new ApiResponse(200,{}, `Video ${responseMessage}`)
+    );
 });
 
-const incrementShares = asyncHandler(async (videoId) => {
-    await Video.findByIdAndUpdate(videoId, { $inc: { shares: 1 } });
+
+const incrementShares = asyncHandler(async (req,res) => {
+    const {videoId} = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(videoId)) {
+        throw new ApiError(400, "Invalid video ID!");
+    }
+    const responseMessage=await Video.findByIdAndUpdate(videoId, { $inc: { shares: 1 } },{new:true});
+
+    return res.status(200).json(
+        new ApiResponse(200,`video share count ${responseMessage.shares}`, `Video shared successfully!`)
+    );
+
 });
 
 

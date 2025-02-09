@@ -33,12 +33,14 @@ const videoSchema=new Schema(
             default:0,
         },
         likes:{
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: "User",      
+            type: [mongoose.Schema.Types.ObjectId], 
+            ref: "User",     
+            default: [] 
         },
         dislikes:{
-            type: mongoose.Schema.Types.ObjectId, 
+            type: [mongoose.Schema.Types.ObjectId], 
             ref: "User",
+            default: []
         },
         shares:{
             type:Number,
