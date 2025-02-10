@@ -7,8 +7,10 @@ import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
 
 const subscribe = asyncHandler(async (req, res) => {
-    const { subscriber } = req.user;
+    const subscriber= req.user._id;
     const { channel } = req.body;
+
+    // console.log("Subscriber",req.user);
 
     if (!mongoose.Types.ObjectId.isValid(channel)) {
         throw new ApiError(400, "Invalid channel ID");
@@ -36,18 +38,18 @@ const subscribe = asyncHandler(async (req, res) => {
 });
 
 const getAllSubscribedChannel=asyncHandler(async (req, res)=>{
-    const { subscriber } = req.user;
+    const subscriber= req.user._id;
 
     const user = await User.findById(subscriber);
     if (!user) {
         throw new ApiError(404, "Subscriber not found");
     }
 
-    const getAllChannels=await Subscription.find(subscriber);
+    const getAllChannels=await Subscription.find({ subscriber: subscriber })
 
 
-    return res.status(201).
-        json(new ApiResponse(201, getAllChannels ,"All channels"));
+    return res.status(200).
+        json(new ApiResponse(200, "All channels", getAllChannels));
     
 });
 
